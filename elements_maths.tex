@@ -1,0 +1,197 @@
+\documentclass[10pt,letterpaper,twoside]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+%\usepackage[left=2.00in, right=2.00in, top=2.00in, bottom=2.00in]{geometry}
+
+\usepackage{hyperref}
+\usepackage{marginnote}
+%\usepackage[top=4cm, bottom=4cm, outer=4cm, inner=4cm, heightrounded, marginparwidth=4cm, marginparsep=4cm]{geometry}
+
+\setlength\parindent{0pt} % no indentation
+
+\usepackage{amsmath}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+%\newcommand{\matr}[1]{\mathbf{#1}} % undergraduate algebra version
+%\newcommand{\matr}[1]{#1}          % pure math version
+\newcommand{\matr}[1]{\bm{#1}}      % ISO complying version
+
+\author{Daniel Chen}
+\title{Elemental Maths}
+\date{}
+
+\begin{document}
+    \maketitle
+\section{Linear Regression}
+
+Given:
+\[
+y = 
+    \begin{bmatrix}
+        y_1\\
+        y_2\\
+        \vdots\\
+        y_j
+    \end{bmatrix}
+,
+X =
+    \begin{bmatrix}
+        x_{1,1} & x_{1, 2} & \hdots & x_{1, p}\\
+        x_{2,1} & x_{2, 2} & \hdots & x_{2, p}\\
+        \vdots  & \vdots   & \ddots & \vdots\\
+        x_{j,1} & x_{j, 2} & \hdots & x_{j, p}
+    \end{bmatrix}
+,
+\beta = 
+    \begin{bmatrix}
+        \beta_1\\
+        \beta_2\\
+        \vdots\\
+        \beta_p
+    \end{bmatrix}
+\]
+
+\vspace{.5cm}
+We can write the formula of the line that calculates $y$
+
+\begin{align}
+    y_j &= \beta_0 + \beta_1 x_{j1} + \beta_2 x_{j2} + ... + \beta_p x_{jp} + \epsilon
+          \marginnote{a line where $j$ is a "row"}\\
+    \intertext{Where $\epsilon \sim N(0, \sigma^2$)}
+          %
+    y_j &= \beta_0 + \sum_{i}^{p}\beta_i x_{ji} + \epsilon
+          \marginnote{$i$ is a value across columns, $p$ is number of columns}\\
+          %
+        &= \sum_{i}^{p}\beta_i x_{ji} + \epsilon
+          \marginnote{add a column of 1's to x}\\
+          %
+        &= X\beta + \epsilon
+          \marginnote{as matrix inner product}
+\end{align}
+
+The goal is to solve for $\hat{\beta}$, i.e.,
+get an estimate for each coefficient in the model.
+There are two ways of doing this.
+One is the linear algebra way, and the other is to look at loss functions.
+
+\subsection{Linear Algebra}
+
+\begin{align}
+    y_j     &= X\beta + \epsilon \\
+    X^Ty    &= X^TX\beta \marginnote{Left multiply by $X^T$ for a square matrix you can invert}\\
+    \beta   &= (X^TX)^{-1} X^TY
+\end{align}
+
+\subsection{Loss Function}
+
+Trying to find a vector (i.e., values) of $\beta$ such that when the line is drawn
+the amount of ``error'' from the calculated $y$ ($\hat{y}$) and the actual $y$ is minimized.
+
+\subsubsection{Squared Error}
+
+One way to do this is to use squared error as a loss function.
+
+\begin{align}
+    \argmin_\beta &= (y - X\beta)^T (y - X\beta)
+\end{align}
+
+Get the $\argmin$ we take the derivative, set it to 0, and solve for $\beta$.
+
+\begin{align}
+     0 &= \frac{d}{d\beta} (y - X\beta)^T (y - X\beta) \\
+       %
+       &= \frac{d}{d\beta} (y^T - \beta^T X^T) (y - X \beta)
+         \marginnote{distribute the T}\\
+       %
+       &= \frac{d}{d\beta} y^Ty - y^TX\beta - \beta^TX^Ty + \beta^TX^TX\beta
+         \marginnote{FOIL}\\
+       %
+       &= \frac{d}{d\beta} y^Ty - 2\beta^TX^Ty + \beta^TX^TX\beta
+         \marginnote{middle terms are equlivilant, use second term without the T}\\
+       %
+       &= 0 - 2X^Ty + 2X^TX\beta\\
+       %
+ 2X^Ty &= 2X^TX\beta\\
+       %
+ \hat{\beta} &= (X^TX)^{-1}X^Ty
+\end{align}
+
+We know this is a minimum, because if we take the second derivative,
+$X$ is positive definite.
+
+\begin{align}
+    content...
+\end{align}
+
+\subsection{Assumptions of linear regression}
+
+Assumptions of linear regression\footnote{\url{http://www.statisticssolutions.com/assumptions-of-linear-regression/}}:
+
+Linear relationship
+Multivariate normality
+No or little multicollinearity
+No auto-correlation
+Homoscedasticity
+
+
+\subsubsection{Multicollinearity}
+
+This assumption comes from inverting a matrix.
+if 2 variables are linear combinations of one another, then the matrix cannot be inverted.
+
+Take the 2x2 example.
+\[
+\begin{bmatrix}
+    a & b \\
+    c & d
+\end{bmatrix}
+\]
+
+and it's inverse
+
+\begin{align}
+    \begin{bmatrix}
+    a & b \\
+    c & d
+    \end{bmatrix}^{-1}
+    =
+    \dfrac{1}{ad - bc}
+    \begin{bmatrix}
+    d & -b \\
+    -c & a
+    \end{bmatrix}    \marginnote{you just know this}
+\end{align}
+
+$ad - bc$ is the determinant
+\footnote{This of the determinant as how much "space" a matrix takes up.
+    It can only be calculated on square matrices.}
+of the matrix
+(i.e., we use the inverse of the determinant to calculate the inverse of the matrix).
+
+If variables were linear combinations of one another, and we calculated it's inverse
+
+\begin{align}
+    \begin{bmatrix}
+    a & 2a \\
+    c & 2c
+    \end{bmatrix}^{-1}
+    =
+    \dfrac{1}{2ac - 2ac}
+    \begin{bmatrix}
+    2c & -2a \\
+    -c & a
+    \end{bmatrix}
+\end{align}
+
+The determinant, $2ac - 2ac$ is 0, causing the first term to be undefined,
+thus the inverse cannot be calculated.
+
+\subsection{Regularization}
+
+Then how does regularization work to address multicollinearity?
+
+\end{document}
