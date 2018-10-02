@@ -190,6 +190,33 @@ If variables were linear combinations of one another, and we calculated it's inv
 The determinant, $2ac - 2ac$ is 0, causing the first term to be undefined,
 thus the inverse cannot be calculated.
 
+\paragraph{Highly correlated features}
+
+Features with high correlation can technically be inverted since the determinant is not 0.
+But due to the accuracy computers can store floating point numbers
+\footnote{\url{https://merely-useful.github.io/still-magic/en/correct/}}
+,
+it is not numerically stable.
+
+\begin{align}
+\begin{bmatrix}
+a & 2a \\
+c & 1.9c
+\end{bmatrix}^{-1}
+=
+\dfrac{1}{1.9ac - 2ac}
+\begin{bmatrix}
+1.9c & -2a \\
+-c & a
+\end{bmatrix}
+=
+\dfrac{1}{-.1}
+\begin{bmatrix}
+1.9c & -2a \\
+-c & a
+\end{bmatrix}
+\end{align}
+
 \subsection{Regularization}
 
 Then how does regularization work to address multicollinearity?
