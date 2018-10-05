@@ -4,7 +4,7 @@ by Trevor Hastie, Robert Tibshirani, and Jerome Friedman.
 
 # Look at my notes
 
-View the notes on [overleaf][2]
+View the notes on [overleaf][2] (overleaf v2 doesn't support git yet, so this will be not in sync)
 
 Or you can use the `Makefile`
 
