@@ -10,6 +10,12 @@
 \usepackage{marginnote}
 %\usepackage[top=4cm, bottom=4cm, outer=4cm, inner=4cm, heightrounded, marginparwidth=4cm, marginparsep=4cm]{geometry}
 
+\usepackage{bm}
+
+% frame
+\usepackage{xcolor}
+\usepackage{mdframed}
+
 \setlength\parindent{0pt} % no indentation
 
 \usepackage{amsmath}
@@ -27,10 +33,10 @@
 \begin{document}
     \maketitle
 \section{Linear Regression}
-
+\marginnote{By convention, matrices and vectors are bold.}
 Given:
 \[
-y = 
+\bm{y} = 
     \begin{bmatrix}
         y_1\\
         y_2\\
@@ -38,7 +44,7 @@ y =
         y_j
     \end{bmatrix}
 ,
-X =
+\bm{X} =
     \begin{bmatrix}
         x_{1,1} & x_{1, 2} & \hdots & x_{1, p}\\
         x_{2,1} & x_{2, 2} & \hdots & x_{2, p}\\
@@ -46,7 +52,7 @@ X =
         x_{j,1} & x_{j, 2} & \hdots & x_{j, p}
     \end{bmatrix}
 ,
-\beta = 
+\bm{\beta} = 
     \begin{bmatrix}
         \beta_1\\
         \beta_2\\
@@ -57,20 +63,20 @@ X =
 
 \vspace{.5cm}
 We can write the formula of the line that calculates $y$
-
+\marginnote{$\epsilon$ needs an index here.}
 \begin{align}
-    y_j &= \beta_0 + \beta_1 x_{j1} + \beta_2 x_{j2} + ... + \beta_p x_{jp} + \epsilon
+    y_j &= \beta_0 + \beta_1 x_{j1} + \beta_2 x_{j2} + ... + \beta_p x_{jp} + \epsilon_j
           \marginnote{a line where $j$ is a "row"}\\
-    \intertext{Where $\epsilon \sim N(0, \sigma^2$)}
+    \intertext{Where $\epsilon_j \sim N(0, \sigma^2$)}
           %
-    y_j &= \beta_0 + \sum_{i}^{p}\beta_i x_{ji} + \epsilon
+    y_j &= \beta_0 + \sum_{i}^{p}\beta_i x_{ji} + \epsilon_j
           \marginnote{$i$ is a value across columns, $p$ is number of columns}\\
           %
-        &= \sum_{i}^{p}\beta_i x_{ji} + \epsilon
+        &= \sum_{i}^{p}\beta_i x_{ji} + \epsilon_j
           \marginnote{add a column of 1's to x}\\
           %
-        &= X\beta + \epsilon
-          \marginnote{as matrix inner product}
+        &= \bm{X}\bm{\beta} + \bm{\epsilon}
+          \marginnote{as matrix inner product and vector $\bm{\epsilon}$}
 \end{align}
 
 The goal is to solve for $\hat{\beta}$, i.e.,
@@ -81,50 +87,92 @@ One is the linear algebra way, and the other is to look at loss functions.
 \subsection{Linear Algebra}
 
 \begin{align}
-    y_j     &= X\beta + \epsilon \\
-    X^Ty    &= X^TX\beta \marginnote{Left multiply by $X^T$ for a square matrix you can invert}\\
-    \beta   &= (X^TX)^{-1} X^TY
+    \bm{y}     &= \bm{X}\bm{\beta} + \bm{\epsilon}\\
+    \bm{X}^T\bm{y}    &= \bm{X}^T\bm{X}\bm{\beta} \marginnote{Left multiply by $\bm{X}^T$ for a square matrix you can invert}\\
+    \bm{\beta}   &= (\bm{X}^T\bm{X})^{-1} \bm{X}^T\bm{y}
 \end{align}
 
 \subsection{Loss Function}
 
-Trying to find a vector (i.e., values) of $\beta$ such that when the line is drawn
-the amount of ``error'' from the calculated $y$ ($\hat{y}$) and the actual $y$ is minimized.
+Trying to find a vector (i.e., values) of $\bm{\beta}$ such that when the line is drawn
+the amount of ``error'' from the calculated $\bm{y}$ ($\hat{\bm{y}}$) and the actual $\bm{y}$ is minimized.
 
 \subsubsection{Squared Error}
 
-One way to do this is to use squared error as a loss function.
+One way to do this is to use the squared error loss function.
 
 \begin{align}
-    \argmin_\beta &= (y - X\beta)^T (y - X\beta)
+    \argmin_{\bm{\beta}} &= (\bm{y} - \bm{X}\bm{\beta})^T (\bm{y} - \bm{X}\bm{\beta})
 \end{align}
 
-Get the $\argmin$ we take the derivative, set it to 0, and solve for $\beta$.
+To get the $\argmin$ we take the derivative, set it to 0, and solve for $\bm{\beta}$.
 
 \begin{align}
-     0 &= \frac{d}{d\beta} (y - X\beta)^T (y - X\beta) \\
+     0 &= \frac{d}{d\bm{\beta}} (\bm{y} - \bm{X}\bm{\beta})^T (\bm{y} - \bm{X}\bm{\beta}) \\
        %
-       &= \frac{d}{d\beta} (y^T - \beta^T X^T) (y - X \beta)
+       &= \frac{d}{d\bm{\beta}} (\bm{y}^T - \bm{\beta}^T \bm{X}^T) (\bm{y} - \bm{X} \bm{\beta})
          \marginnote{distribute the T}\\
        %
-       &= \frac{d}{d\beta} y^Ty - y^TX\beta - \beta^TX^Ty + \beta^TX^TX\beta
+       &= \frac{d}{d\bm{\beta}} \bm{y}^T\bm{y} - \bm{y}^T\bm{X}\bm{\beta} - \bm{\beta}^T\bm{X}^T\bm{y} + \bm{\beta}^T\bm{X}^T\bm{X}\bm{\beta}
          \marginnote{FOIL}\\
        %
-       &= \frac{d}{d\beta} y^Ty - 2\beta^TX^Ty + \beta^TX^TX\beta
-         \marginnote{middle terms are equlivilant, use second term without the T}\\
+       &= \frac{d}{d\bm{\beta}} \bm{y}^T\bm{y} - 2\bm{\beta}^T\bm{X}^T\bm{y} + \bm{\beta}^T\bm{X}^T\bm{X}\bm{\beta}
+         \marginnote{middle terms are equlivilant, use second term without the T}
+	 \label{equ:equlivilant_transpose}\\
        %
-       &= 0 - 2X^Ty + 2X^TX\beta\\
+       &= 0 - 2\bm{X}^T\bm{y} + 2\bm{X}^T\bm{X}\bm{\beta}\\
        %
- 2X^Ty &= 2X^TX\beta\\
+ 2\bm{X}^T\bm{y} &= 2\bm{X}^T\bm{X}\bm{\beta}\\
        %
- \hat{\beta} &= (X^TX)^{-1}X^Ty
+ \hat{\bm{\beta}} &= (\bm{X}^T\bm{X})^{-1}\bm{X}^T\bm{y}
 \end{align}
 
-We know this is a minimum, because if we take the second derivative,
-$X$ is positive definite.
+We know this is a minimum because its second derivative (with respect to $\bm{\beta}$ is positive definite.
 
 \begin{align}
-    content...
+    \frac{d}{d\bm{\beta}^2}(\bm{y} - \bm{X}\bm{\beta})^T (\bm{y} - \bm{X}\bm{\beta}) &= \frac{d}{d\bm{\beta}} (- 2\bm{X}^T\bm{y} + 2\bm{X}^T\bm{X}\bm{\beta})\\
+     &= 2\bm{X}^T\bm{X}
+\end{align}
+
+Matrix expressions of the form $\bm{X}^T\bm{X}$ are always positive semi-definite, and are positive definite exactly when all columns of $\bm{X}$ are linearly independent.
+Equation \ref{equ:equlivilant_transpose}}.
+
+One side is the transpose of the other.
+
+%\begin{mdframed}[backgroundcolor=blue!20] 
+\begin{align}
+   y^TX\beta     &= \beta^TX^Ty\\
+   (n \times 1)^T (n \times p) (p \times 1) &= (p \times 1)^T (n \times p)^T (n \times 1)
+        \nonumber \marginnote{Look at dimensions}\\
+   (1 \times n) (n \times p) (p \times 1) &= (1 \times p) (p \times n) (n \times 1)
+        \nonumber\\
+   (1 \times p) (p \times 1) &= (1 \times n) (n \times 1) \nonumber\\
+   (1 \times 1) &= (1 \times 1)
+        \nonumber \marginnote{transpose of a symmetric matrix is itself, 1x1 is symetric}\\
+   %
+   (y^TX\beta)^T &= (\beta^TX^Ty)^T\\
+   %
+   (X^Ty\beta)^T &= (X\beta y)^T\\
+   %
+   \beta^TX^Ty   &= y^TX\beta \marginnote{Tranposes of each other}
+\end{align}
+%\end{mdframed}
+
+The transpose of a symmetric matrix is itself.
+
+\begin{align}
+\begin{bmatrix}
+a & b & c \\
+b & a & b \\
+c & b & a
+\end{bmatrix}^{T}
+=
+\begin{bmatrix}
+a & b & c \\
+b & a & b \\
+c & b & a
+\end{bmatrix}
+\marginnote{transpose of a symmetric matrix is itself}
 \end{align}
 
 \subsection{Assumptions of linear regression}
@@ -219,6 +267,18 @@ c & 1.9c
 
 \subsection{Regularization}
 
-Then how does regularization work to address multicollinearity?
+Then how does regularization work to address multicollinearity? Compute the determinant of 
+
+\begin{align}
+    \begin{bmatrix}
+    a & 2a \\
+    c & 2c
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+    \lambda & 0 \\
+    0 & \lambda \\
+    \end{bmatrix}
+\end{align}
 
 \end{document}
