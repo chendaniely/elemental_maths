@@ -4,7 +4,7 @@ by Trevor Hastie, Robert Tibshirani, and Jerome Friedman.
 
 # Look at my notes
 
-View the notes on [overleaf][2] (overleaf v2 doesn't support git yet, so this will be not in sync)
+View and edit the notes on [overleaf][2] and help make it better :)
 
 Or you can use the `Makefile`
 
@@ -13,4 +13,4 @@ make pdf
 ```
 
 [1]: https://web.stanford.edu/~hastie/ElemStatLearn/
-[2]: https://www.overleaf.com/read/ypsszwdxrdxv
+[2]: https://www.overleaf.com/8475969294jntmhtswpqrh
